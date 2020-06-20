@@ -92,7 +92,7 @@ module.exports = {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: 'http://127.0.0.1:8000/api/',
+    baseURL: 'https://www.api.vety.bytecuba.com/api/',
     /*headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Accept': 'application/json',

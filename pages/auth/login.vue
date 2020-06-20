@@ -30,7 +30,6 @@
                 >
                   <v-text-field
                     v-model="form.email"
-                    :counter="10"
                     prepend-icon="mdi-account"
                     label="Email"
                     :rules="emailRules"
@@ -42,7 +41,6 @@
                 >
                   <v-text-field
                     v-model="form.password"
-                    :counter="10"
                     label="Password"
                     prepend-icon="mdi-lock"
                     append-icon="mdi-eye-off"
@@ -108,7 +106,7 @@ export default {
         console.log(res)
         console.log(this.$auth.$state)
       } catch (errors) {
-        // console.log(errors)
+        console.log(errors)
       }
     },
     async logout () {
