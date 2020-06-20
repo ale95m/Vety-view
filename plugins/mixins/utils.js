@@ -29,6 +29,9 @@ Vue.mixin({
     closeModal () {
       this.$emit('closeModal')
     },
+    getNumber (value) {
+      return +value
+    },
     updateMain () {
       this.$emit('updateMain')
     },

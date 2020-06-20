@@ -68,7 +68,7 @@
                     cols="12"
                     lg="6"
                   >
-                    <ValidationProvider v-slot="{ errors }" name="Tarjeta de credito" rules="required|min:12">
+                    <ValidationProvider v-slot="{ errors }" name="Tarjeta de credito" rules="required|min:14">
                       <v-text-field
                         v-model="item.credit_card"
                         v-mask="'#### #### ####'"

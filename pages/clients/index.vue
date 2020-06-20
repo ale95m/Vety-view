@@ -48,7 +48,7 @@
         {{ $moment(item.created_at).format('YYYY-MM-DD') }}
       </template>
       <template v-slot:item.level="{ item }">
-        <v-rating v-model="item.level" dense small readonly color="primary" />
+        <v-rating :value="+item.level" dense small readonly color="primary" />
       </template>
       <template v-slot:item.actions="{ item }">
         <v-tooltip bottom>
