@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title
-      class="grey lighten-2"
+      class="elevation-1 primaryTopBar"
       primary-title
     >
       <span>{{ title }}</span>
@@ -16,60 +16,75 @@
     <v-container>
       <v-row>
         <v-col sm="12" md="4">
-          <v-form>
-            <v-container>
-              <v-row>
-                <v-col
-                  cols="12"
-                  lg="6"
-                >
-                  <v-text-field
-                    v-model="item.name"
-                    type="text"
-                    label="Nombre"
-                    required
-                  />
-                </v-col>
+          <ValidationObserver ref="observer">
+            <v-form>
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    lg="6"
+                  >
+                    <ValidationProvider v-slot="{ errors }" name="Nombre" rules="required">
+                      <v-text-field
+                        v-model="item.name"
+                        type="text"
+                        label="Nombre"
+                        :error-messages="errors"
+                      />
+                    </ValidationProvider>
+                  </v-col>
 
-                <v-col
-                  cols="12"
-                  lg="6"
-                >
-                  <v-text-field
-                    v-model="item.last_name"
-                    type="text"
-                    label="Apellidos"
-                    required
-                  />
-                </v-col>
+                  <v-col
+                    cols="12"
+                    lg="6"
+                  >
+                    <ValidationProvider v-slot="{ errors }" name="Apellidos" rules="required">
+                      <v-text-field
+                        v-model="item.last_name"
+                        type="text"
+                        label="Apellidos"
+                        :error-messages="errors"
+                        required
+                      />
+                    </ValidationProvider>
+                  </v-col>
 
-                <v-col
-                  cols="12"
-                  lg="6"
-                >
-                  <v-autocomplete
-                    v-model="item.sex"
-                    item-text="text"
-                    item-value="value"
-                    :items="[{text: 'masculino', value:false}, {text: 'femenino', value:true}]"
-                    label="Sexo"
-                  />
-                </v-col>
-                <v-col
-                  cols="12"
-                  lg="6"
-                >
-                  <v-text-field
-                    v-model="item.credit_card"
-                    type="text"
-                    :counter="10"
-                    label="Tarjeta de credito"
-                    required
-                  />
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
+                  <v-col
+                    cols="12"
+                    lg="6"
+                  >
+                    <ValidationProvider v-slot="{ errors }" name="Sexo" rules="required">
+                      <v-autocomplete
+                        v-model="item.sex"
+                        item-text="text"
+                        item-value="value"
+                        :error-messages="errors"
+                        :items="[{text: 'masculino', value:0}, {text: 'femenino', value:1}]"
+                        label="Sexo"
+                      />
+                    </ValidationProvider>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    lg="6"
+                  >
+                    <ValidationProvider v-slot="{ errors }" name="Tarjeta de credito" rules="required|min:12">
+                      <v-text-field
+                        v-model="item.credit_card"
+                        v-mask="'#### #### ####'"
+                        :counter="12"
+                        type="text"
+                        :error-messages="errors"
+                        label="Tarjeta de credito"
+                        :counter-value="counterCredit_card"
+                        required
+                      />
+                    </ValidationProvider>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </ValidationObserver>
         </v-col>
         <v-divider
           class="mx-4 hidden-sm-and-down"
@@ -81,6 +96,7 @@
             <pets-client
               v-if="!newClient"
               :client="item"
+              @updateMain="updateMain()"
             />
             <v-row
               v-else
@@ -107,7 +123,7 @@
     <v-card-actions>
       <v-spacer />
       <p v-if="!newClient" class="text--primary mb-0 mr-6 mt-1">
-        Creado: {{ item ? $moment(item.created_at).format('YYYY-MM-DD') : '' }}
+        Agregado: {{ item ? $moment(item.created_at).format('YYYY-MM-DD') : '' }}
       </p>
       <v-btn
         v-if="!newClient"
@@ -130,13 +146,28 @@
 </template>
 
 <script>
+import { ValidationProvider, ValidationObserver, extend } from 'vee-validate'
+import { required, min } from 'vee-validate/dist/rules'
 import petsClient from '../pets/petsClient'
 import client from '../../plugins/apis/vety/client'
+
+extend('required', {
+  ...required,
+  message: '{_field_} no puede estar vacio'
+})
+extend('min', {
+  ...min,
+  message: '{_field_} debe contener 12 digitos'
+})
+
+// extend('required', required);
 
 export default {
   name: 'Create',
   components: {
-    petsClient
+    petsClient,
+    ValidationProvider,
+    ValidationObserver
   },
   props: {
     title: {
@@ -164,37 +195,69 @@ export default {
       }
     }
   },
+  computed: {
+    CreditCard () {
+      return this.item.credit_card ? this.item.credit_card.toString().replace(/\s/g, '') : 0
+    }
+  },
   created () {
     this.newClient = this.newItem
-    if (!this.newClient) { this.item = JSON.parse(JSON.stringify(this.selectedItem)) }
+    if (!this.newClient) {
+      this.item = JSON.parse(JSON.stringify(this.selectedItem))
+    }
+    // console.log(this.item)
   },
   methods: {
-    createItem () {
-      // this.$toastr('success', 'i am a toastr success', 'hello')
-      this.myToastSuccess('car')
-      client.create(this.$axios, this.item)
-        .then((res) => {
-          this.apiResponse(res)
-          if (this.responseSuccessOrError()) {
-            this.item = this.responseData()
-            this.newClient = false
-            this.updateMain()
-            console.log(this.responseData())
-          }
-        })
-        .catch((error) => {
-          this.responseRequestError(error)
-        })
+    counterCredit_card (value) {
+      return this.item.credit_card ? this.CreditCard.length : 0
     },
-    async updateItem () {
-      try {
-        this.apiResponse(await client.update(this.$axios, this.item))
-        this.item = this.responseData()
-        this.updateMain()
-        console.log(this.responseData())
-      } catch (errors) {
-        console.log('myErrors' + errors)
-      }
+    createItem () {
+      this.$refs.observer.validate().then((success) => {
+        if (!success) { return }
+        client.create(this.$axios, {
+          name: this.item.name,
+          last_name: this.item.last_name,
+          sex: this.item.sex,
+          credit_card: this.CreditCard
+        })
+          .then((res) => {
+            this.apiResponse(res)
+            if (this.responseSuccessOrError()) {
+              this.item = this.responseData()
+              this.newClient = false
+              this.updateMain()
+              this.myToastSuccess('Cliente agregado correctamente')
+              console.log(this.responseData())
+            }
+          })
+          .catch((error) => {
+            this.responseRequestError(error)
+          })
+      })
+    },
+    updateItem () {
+      this.$refs.observer.validate().then((success) => {
+        if (!success) { return }
+        client.update(this.$axios, {
+          id: this.item.id,
+          name: this.item.name,
+          last_name: this.item.last_name,
+          sex: this.item.sex,
+          credit_card: this.CreditCard
+        })
+          .then((res) => {
+            this.apiResponse(res)
+            if (this.responseSuccessOrError()) {
+              this.item = this.responseData()
+              this.updateMain()
+              this.myToastSuccess('Cliente actualizado correctamente')
+              console.log(this.responseData())
+            }
+          })
+          .catch((error) => {
+            this.responseRequestError(error)
+          })
+      })
     }
   }
 }

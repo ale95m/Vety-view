@@ -112,7 +112,7 @@
         solo-inverted
         hide-details
         prepend-inner-icon="mdi-magnify"
-        label="Search"
+        label="Busqueda rapida"
       />
       <v-spacer />
       <notification />

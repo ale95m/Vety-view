@@ -5,9 +5,9 @@
   "author": "Omar Guerra",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "cross-env NODE_ENV=development nodemon server/index.js --watch server",
     "build": "nuxt build",
-    "start": "nuxt start",
+    "start": "cross-env NODE_ENV=production node server/index.js",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore ."
   },
@@ -15,18 +15,22 @@
     "@nuxtjs/auth": "^4.9.1",
     "@nuxtjs/axios": "^5.11.0",
     "@nuxtjs/moment": "^1.6.1",
+    "express": "^4.17.1",
     "nuxt": "^2.0.0",
     "vee-validate": "^3.3.3",
     "vue-avatar": "^2.3.0",
-    "vue-toastr": "^2.1.2"
+    "vue-the-mask": "^0.11.1",
+    "vue-toastr": "^2.1.2",
+    "vuetify-confirm": "^2.0.3"
   },
   "devDependencies": {
-    "@nuxtjs/vuetify": "^1.0.0",
-    "vuetify": "*",
     "@nuxtjs/eslint-config": "^2.0.0",
     "@nuxtjs/eslint-module": "^1.0.0",
+    "@nuxtjs/vuetify": "^1.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^6.1.0",
-    "eslint-plugin-nuxt": ">=0.4.2"
+    "eslint-plugin-nuxt": ">=0.4.2",
+    "nodemon": "^2.0.4",
+    "vuetify": "*"
   }
 }

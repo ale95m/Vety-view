@@ -1,7 +1,7 @@
-import colors from 'vuetify/es5/util/colors'
-import es from "vuetify/lib/locale/es";
 
-export default {
+const es = require('vuetify/es5/locale/es').default
+
+module.exports = {
   mode: 'universal',
   /*
   ** Headers of the page
@@ -41,6 +41,8 @@ export default {
     '~plugins/mixins/utils.js',
     { src: '~/plugins/vue-toast', mode: 'client' },
     { src: '~plugins/mixins/toasts.js', mode: 'client' },
+    { src: '~plugins/confirmDialog.js', mode: 'client' },
+    { src: '~plugins/vue-the-mask', mode: 'client' },
   ],
   /*
   ** Nuxt.js dev-modules
@@ -103,12 +105,16 @@ export default {
         light: {
           //primary: '#c70d54',
           background: '#ffffff',
-          navBarColor: '#c70d54'
+          navBarColor: '#c70d54',
+          secondaryBackground: '#ffffff',
+          primaryTopBar: '#ffffff',
         },
         dark: {
           //primary: '#80217D',
           background: '#353a40',
-          navBarColor: '#80217D'
+          navBarColor: '#80217D',
+          secondaryBackground: '#2f2f2f',
+          primaryTopBar: '#1E1E1E',
         }
       }
     },
@@ -121,6 +127,10 @@ export default {
   ** Build configuration
   */
   build: {
+    // Add exception
+    transpile: [
+      "vee-validate/dist/rules"
+    ],
     /*
     ** You can extend webpack config here
     */

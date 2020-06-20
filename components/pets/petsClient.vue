@@ -21,7 +21,7 @@
         color="primary"
         dark
         class="ml-3"
-        @click="newItem"
+        @click="createItem"
       >
         <v-icon>mdi-plus</v-icon>
         <v-icon>mdi-dog-side</v-icon>
@@ -35,6 +35,7 @@
       disable-pagination
       :hide-default-footer="true"
       class="elevation-1"
+      :search="filter"
     >
       <template v-slot:item.last_visit="{ item }">
         {{ $moment(item.last_visit).format('YYYY-MM-DD') }}
@@ -80,7 +81,7 @@
               small
               v-bind="attrs"
               v-on="on"
-              @click="removeItem(item)"
+              @click="myToastInfo('Funcionalidad aún no programada')"
             >
               mdi-eye
             </v-icon>
@@ -94,8 +95,12 @@
       :max-width="'900px'"
     >
       <create
+        v-if="modal"
         :title="title"
         :selected-item="selectedItem"
+        :new-item="newItem"
+        :client-id="client.id"
+        @updateMain="getPetsByClient"
         @closeModal="modal = false"
       />
     </v-dialog>
@@ -104,6 +109,7 @@
 
 <script>
 
+import pet from '../../plugins/apis/vety/pet'
 import create from './create'
 
 export default {
@@ -122,9 +128,10 @@ export default {
     return {
       modal: false,
       selectedItem: null,
+      newItem: true,
       title: 'Nueva mascota',
       items: [],
-      filter: [],
+      filter: '',
       fields: [
         { text: 'Nombre', value: 'name' },
         { text: 'Especie', value: 'specie' },
@@ -135,21 +142,46 @@ export default {
     }
   },
   created () {
+    if (this.client.pets) { this.items = JSON.parse(JSON.stringify(this.client.pets)) }
     console.log(this.client)
   },
   methods: {
-    newItem () {
+    async getPetsByClient () {
+      console.log('called')
+      try {
+        this.apiResponse(await pet.getPets(this.$axios, { params: { client_id: this.client.id } }))
+        this.items = this.responseData()
+      } catch (errors) {
+        console.log('myErrors' + errors)
+      }
+    },
+    createItem () {
       this.title = 'Nueva mascota'
+      this.newItem = true
       this.selectedItem = null
       this.modal = true
     },
     editItem (item) {
       this.title = 'Editar mascota'
+      this.newItem = false
       this.selectedItem = item
       this.modal = true
     },
-    removeItem (item) {
-
+    async removeItem (item) {
+      const res = await this.$confirm('Desea dar de baja a la mascota ' + item.name,
+        {
+          icon: 'mdi-calendar'
+        })
+      if (res) {
+        try {
+          await pet.remove(this.$axios, item)
+          this.myToastSuccess('mascota dada de baja correctamente')
+          await this.getPetsByClient()
+          this.updateMain()
+        } catch (errors) {
+          console.log('myErrors' + errors)
+        }
+      }
     }
   }
 }

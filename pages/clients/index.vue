@@ -35,8 +35,12 @@
       :items="items"
       item-key="id"
       :items-per-page="10"
-      class="elevation-1"
+      class="elevation-1 secondaryBackground"
+      :search="filter"
     >
+      <template v-slot:item.pets="{ item }">
+        {{ petsFields(item.pets) }}
+      </template>
       <template v-slot:item.last_visit="{ item }">
         {{ $moment(item.last_visit).format('YYYY-MM-DD') }}
       </template>
@@ -81,7 +85,7 @@
               small
               v-bind="attrs"
               v-on="on"
-              @click="removeItem(item)"
+              @click="myToastInfo('Funcionalidad aún no programada')"
             >
               mdi-eye
             </v-icon>
@@ -95,6 +99,7 @@
       :max-width="$vuetify.breakpoint.smAndDown ? null : '85%'"
     >
       <create
+        v-if="modal"
         :title="title"
         :new-item="newItem"
         :selected-item="selectedItem"
@@ -108,6 +113,7 @@
 <script>
 import client from '../../plugins/apis/vety/client'
 import create from '../../components/client/create'
+import { eventBus } from '../../eventBus'
 
 export default {
   name: 'Index',
@@ -128,10 +134,11 @@ export default {
     return {
       modal: false,
       items: [],
+      speciesOfAnimals: [],
       newItem: true,
       selectedItem: null,
       title: 'Nuevo cliente',
-      filter: [],
+      filter: '',
       expanded: [],
       fields: [
         {
@@ -151,14 +158,27 @@ export default {
     }
   },
   created () {
+    eventBus.$on('createClient', (data) => {
+      if (data) {
+        // console.log('me LLame dentro OK')
+        this.getClients()
+      }
+      // console.log('me LLame')
+    })
     this.items = this.apiData
   },
   methods: {
+    petsFields (pets) {
+      let result = ''
+      pets.forEach((item) => { result += item.name + ',' })
+      if (result.length > 0) { result = result.slice(0, result.length - 1) }
+      return result
+    },
     async getClients () {
       try {
         this.apiResponse(await client.getClients(this.$axios))
         this.items = this.responseData()
-        console.log(this.responseData())
+        console.log('result', this.responseData())
       } catch (errors) {
         console.log(errors)
       }
@@ -174,15 +194,19 @@ export default {
       this.selectedItem = item
       this.modal = !this.modal
     },
-    showConfirmationRemove (item) {
-      this.selectedItem = item
-    },
     async removeItem (item) {
-      try {
-        await client.remove(this.$axios, item)
-        await this.getClients()
-      } catch (errors) {
-        console.log('myErrors' + errors)
+      const res = await this.$confirm('Desea dar de baja al cliente ' + item.name + ' ' + item.last_name,
+        {
+          icon: 'mdi-calendar'
+        })
+      if (res) {
+        try {
+          await client.remove(this.$axios, item)
+          this.myToastSuccess('cliente dado de baja correctamente')
+          await this.getClients()
+        } catch (errors) {
+          console.log('myErrors' + errors)
+        }
       }
     }
   }
