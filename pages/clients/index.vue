@@ -35,7 +35,7 @@
       :items="items"
       item-key="id"
       :items-per-page="10"
-      class="elevation-1 secondaryBackground"
+      class="elevation-1"
       :search="filter"
     >
       <template v-slot:item.pets="{ item }">

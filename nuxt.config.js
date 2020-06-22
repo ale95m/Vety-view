@@ -58,7 +58,8 @@ module.exports = {
   */
   modules: [
     '@nuxtjs/axios',
-    '@nuxtjs/auth'
+    '@nuxtjs/auth',
+    '@nuxtjs/proxy'
   ],
   auth: {
     strategies: {
@@ -87,11 +88,22 @@ module.exports = {
       logout: '/auth/login',
     }
   },
+  proxy: {
+    '/api': {
+      target: 'https://www.api.vety.bytecuba.com/api/',
+      pathRewrite: {
+        '^/api' : '/'
+      },
+      changeOrigin: true
+    }
+    //'/api': 'https://www.api.vety.bytecuba.com/'
+  },
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
+    //proxy: true,
     baseURL: 'https://www.api.vety.bytecuba.com/api/',
     /*headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

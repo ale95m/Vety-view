@@ -6,7 +6,7 @@ export default {
     return await axios.get('/species')
   },
   async create (axios, data) {
-    return await axios.post('/pets/', data)
+    return await axios.post('/pets', data)
   },
   async update (axios, data) {
     return await axios.put('/pets/' + data.id, data)

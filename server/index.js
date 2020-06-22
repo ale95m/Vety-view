@@ -1,6 +1,9 @@
 const express = require('express')
+//const { createProxyMiddleware } = require('http-proxy-middleware');
+//const cors = require('cors')
 const { Nuxt, Builder } = require('nuxt')
 const app = express()
+
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
@@ -19,7 +22,11 @@ async function start () {
     await builder.build()
   }
 
+  //app.use('/api', createProxyMiddleware({ target: 'http://localhost:3000', changeOrigin: true }));
+
   // Give nuxt middleware to express
+  //app.use(cors({ origin: true }))
+
   app.use(nuxt.render)
 
   // Listen the server

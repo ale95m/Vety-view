@@ -115,7 +115,7 @@ export default {
     }
   },
   created () {
-    this.themeDark = !!this.User.theme
+    this.themeDark = this.User.theme !== '0'
   },
   methods: {
     async logout () {
@@ -130,8 +130,9 @@ export default {
         this.themeDark = !this.themeDark
         this.$vuetify.theme.dark = this.themeDark
         await worker.setTheme(this.$axios, this.User.id, { theme: this.themeDark })
+        // console.log('changed Theme', this.themeDark)
       } catch (errors) {
-        // console.log(errors)
+        console.log(errors)
       }
     }
   }

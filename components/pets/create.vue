@@ -34,7 +34,7 @@
                   item-text="text"
                   item-value="value"
                   :error-messages="errors"
-                  :items="[{text: 'masculino', value:0}, {text: 'femenino', value:1}]"
+                  :items="[{text: 'masculino', value:'0'}, {text: 'femenino', value:'1'}]"
                   label="Sexo"
                 />
               </ValidationProvider>
@@ -92,7 +92,6 @@
                 <v-date-picker
                   ref="picker"
                   v-model="item.birthday"
-                  day-format="YYYY-MM-DD"
                   no-title
                   scrollable
                   :max="new Date().toISOString().substr(0, 10)"
@@ -113,7 +112,7 @@
             </v-row>
             <v-row>
               <v-text-field
-                v-model="item.chip"
+                v-model="item.Chip"
                 class="ml-2 mr-2"
                 type="text"
                 label="Chip"
@@ -128,16 +127,15 @@
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="item.ship_at"
+                    v-model="item.chip_at"
                     label="Fecha"
                     prepend-icon="mdi-calendar"
-                    day-format="YYYY-MM-DD"
                     readonly
                     v-bind="attrs"
                     v-on="on"
                   />
                 </template>
-                <v-date-picker v-model="item.ship_at" no-title scrollable>
+                <v-date-picker v-model="item.chip_at" no-title scrollable>
                   <v-spacer />
                   <v-btn text color="primary" @click="menuChip = false">
                     OK
@@ -266,8 +264,8 @@ export default {
         birthday: null,
         sterile: false,
         weight: null,
-        ship: null,
-        ship_at: null,
+        chip: null,
+        chip_at: null,
         nhc: null,
         census: null,
         character: null,
@@ -302,7 +300,7 @@ export default {
     itemReady (item, excludes = ['created_at', 'updated_at']) {
       const result = {}
       for (const [key, value] of Object.entries(item)) {
-        if ((value || value === false) && !excludes.includes(key)) {
+        if ((value || value === '0' || value === false) && !excludes.includes(key)) {
           result[key] = value
         }
       }

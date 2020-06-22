@@ -59,7 +59,7 @@
                         item-text="text"
                         item-value="value"
                         :error-messages="errors"
-                        :items="[{text: 'masculino', value:0}, {text: 'femenino', value:1}]"
+                        :items="[{text: 'masculino', value:'0'}, {text: 'femenino', value:'1'}]"
                         label="Sexo"
                       />
                     </ValidationProvider>

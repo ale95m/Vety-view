@@ -171,7 +171,9 @@ export default {
     }
   },
   beforeCreate () {
-    this.$vuetify.theme.dark = !!this.$auth.$state.user.theme
+    console.log(this.$auth.$state.user)
+    console.log('result', this.$auth.$state.user.theme !== '0')
+    this.$vuetify.theme.dark = this.$auth.$state.user.theme !== '0'
   }
 }
 </script>
